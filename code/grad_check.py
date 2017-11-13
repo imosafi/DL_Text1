@@ -20,7 +20,7 @@ def gradient_check(f, x):
         ### modify x[ix] with h defined above to compute the numerical gradient.
         ### if you change x, make sure to return it back to its original state for the next iteration.
         ### YOUR CODE HERE:
-        raise NotImplementedError
+        numeric_gradient = (f(x[ix] + h)[0] - f(x[ix] - h)[0]) / (2 * h)
         ### END YOUR CODE
 
         # Compare gradients
@@ -44,7 +44,9 @@ def sanity_check():
     print "Running sanity checks..."
     gradient_check(quad, np.array(123.456))      # scalar test
     gradient_check(quad, np.random.randn(3,))    # 1-D test
-    gradient_check(quad, np.random.randn(4,5))   # 2-D test
+    gradient_check(quad, np.random.randn(4, 5))   # 2-D test
+    gradient_check(quad, np.random.randn(9, 9))
+    gradient_check(quad, np.random.randn(2, 3, 3))
     print ""
 
 if __name__ == '__main__':
