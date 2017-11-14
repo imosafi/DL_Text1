@@ -1,5 +1,6 @@
 import loglinear as ll
 import random
+import utils
 
 STUDENT={'name': 'YOUR NAME',
          'ID': 'YOUR ID NUMBER'}
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     # YOUR CODE HERE
     # write code to load the train and dev sets, set up whatever you need,
     # and call train_classifier.
-    
+    train_data = utils.TRAIN
     # ...
    
     params = ll.create_classifier(in_dim, out_dim)

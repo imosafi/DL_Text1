@@ -15,8 +15,9 @@ def softmax(x):
     # With a vectorized implementation, the code should be no more than 2 lines.
     #
     # For numeric stability, use the identify you proved in Ex 2 Q1.
-    return x
-    
+    # return x
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
 
 def classifier_output(x, params):
     """
@@ -25,6 +26,8 @@ def classifier_output(x, params):
     """
     W,b = params
     # YOUR CODE HERE.
+    probs = softmax(np.dot(W, x) + b)
+
     return probs
 
 def predict(x, params):
@@ -48,6 +51,22 @@ def loss_and_gradients(x, y, params):
     """
     W,b = params
     # YOU CODE HERE
+    y_label = np.zeros(b.shape)
+    y_label[y] = 1
+
+    y_pred = softmax(x)
+    loss = -np.log(y_pred[y])
+
+    gW = np.empty(W.shape)
+    gb = np.empty(b.shape)
+
+    for (k,t), value in np.ndenumerate(gW):
+        gW[k,t] = (-y_label[t] * x[k]) / (x[k] * W[k, t] + b[t])
+
+    for (k), value in np.ndenumerate(gb):
+        denominator = 0
+
+
     return loss,[gW,gb]
 
 def create_classifier(in_dim, out_dim):
