@@ -17,7 +17,8 @@ def softmax(x):
     # For numeric stability, use the identify you proved in Ex 2 Q1.
     # return x
     e_x = np.exp(x - np.max(x))
-    return e_x / e_x.sum()
+    bla = e_x / e_x.sum()
+    return bla
 
 def classifier_output(x, params):
     """
@@ -26,7 +27,7 @@ def classifier_output(x, params):
     """
     W,b = params
     # YOUR CODE HERE.
-    probs = softmax(np.dot(W, x) + b)
+    probs = softmax(np.dot(x, W) + b)
 
     return probs
 
@@ -54,17 +55,16 @@ def loss_and_gradients(x, y, params):
     y_label = np.zeros(b.shape)
     y_label[y] = 1
 
-    y_pred = softmax(x)
+    y_pred = classifier_output(x, params)
     loss = -np.log(y_pred[y])
 
     gW = np.empty(W.shape)
     gb = np.empty(b.shape)
 
-    for (k,t), value in np.ndenumerate(gW):
-        gW[k,t] = (-y_label[t] * x[k]) / (x[k] * W[k, t] + b[t])
+    for (i,j), value in np.ndenumerate(gW):
+        gW[i,j] = x[i] * (y_pred[j] - y_label[j])
 
-    for (k), value in np.ndenumerate(gb):
-        denominator = 0
+    gb = y_pred - y_label
 
 
     return loss,[gW,gb]
@@ -116,5 +116,3 @@ if __name__ == '__main__':
         gradient_check(_loss_and_b_grad, b)
         gradient_check(_loss_and_W_grad, W)
 
-
-    
