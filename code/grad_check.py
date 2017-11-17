@@ -11,7 +11,6 @@ def gradient_check(f, x):
     """ 
     fx, grad = f(x) # Evaluate function value at original point
     h = 1e-4
-
     # Iterate over all indexes in x
     it = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'])
     while not it.finished:

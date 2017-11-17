@@ -5,14 +5,15 @@ STUDENT={'name': 'YOUR NAME',
 
 def classifier_output(x, params):
     # YOUR CODE HERE.
-    return probs
+    # return probs
+    return  None
 
 def predict(x, params):
     return np.argmax(classifier_output(x, params))
 
 def loss_and_gradients(x, y, params):
     # YOU CODE HERE
-    return ...
+    return None
 
 def create_classifier(dims):
     """
@@ -34,6 +35,15 @@ def create_classifier(dims):
     to first layer, then the second two are the matrix and vector from first to
     second layer, and so on.
     """
+    ## change it not to be zero initialization
     params = []
+    for index, val in enumerate(dims):
+        if (index != len(dims) - 1):
+            params.append(np.zeros((dims[index], dims[index + 1])))
+            params.append(np.zeros(dims[index + 1]))
     return params
 
+if __name__ == '__main__':
+    x = create_classifier([50, 100, 120, 10])
+
+    t = 8

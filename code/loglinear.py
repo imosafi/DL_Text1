@@ -50,7 +50,7 @@ def loss_and_gradients(x, y, params):
     gW: matrix, gradients of W
     gb: vector, gradients of b
     """
-    W,b = params
+    W, b = params
     # YOU CODE HERE
     y_label = np.zeros(b.shape)
     y_label[y] = 1
@@ -61,13 +61,12 @@ def loss_and_gradients(x, y, params):
     gW = np.empty(W.shape)
     gb = np.empty(b.shape)
 
-    for (i,j), value in np.ndenumerate(gW):
-        gW[i,j] = x[i] * (y_pred[j] - y_label[j])
+    for (i, j), value in np.ndenumerate(gW):
+        gW[i, j] = x[i] * (y_pred[j] - y_label[j])
 
     gb = y_pred - y_label
 
-
-    return loss,[gW,gb]
+    return loss, [gW, gb]
 
 def create_classifier(in_dim, out_dim):
     """
