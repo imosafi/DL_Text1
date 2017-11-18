@@ -3,17 +3,31 @@ import numpy as np
 STUDENT={'name': 'YOUR NAME',
          'ID': 'YOUR ID NUMBER'}
 
+
+def tanh_derivative(x):
+    return 1.0 - np.tanh(x)**2
+
+
 def classifier_output(x, params):
-    # YOUR CODE HERE.
+    # YOUR CODE HERE
+    i = 0
+    value = x
+    while i < len(params) - 1:
+        value = np.tanh(np.dot(value, params[i]) + params[i + 1])
+        i = i + 2
+    # or return softmax(value)
+    return value
     # return probs
-    return  None
+
 
 def predict(x, params):
     return np.argmax(classifier_output(x, params))
 
+
 def loss_and_gradients(x, y, params):
     # YOU CODE HERE
     return None
+
 
 def create_classifier(dims):
     """
@@ -44,6 +58,10 @@ def create_classifier(dims):
     return params
 
 if __name__ == '__main__':
+    y = create_classifier([20, 10])
     x = create_classifier([50, 100, 120, 10])
+
+    x_result = classifier_output([0] * 20, y)
+    x2_result = classifier_output([0] * 50, x)
 
     t = 8
