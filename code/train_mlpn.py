@@ -1,10 +1,12 @@
-import loglinear as ll
+import mlpn as mlpn
 import random
 import utils
 import numpy as np
 
 STUDENT={'name': 'YOUR NAME',
          'ID': 'YOUR ID NUMBER'}
+
+EXECUTE_TEST = False
 
 def feats_to_vec(features):
     x = np.zeros(600)
@@ -21,7 +23,7 @@ def accuracy_on_dataset(dataset, params):
         # Compute the accuracy (a scalar) of the current parameters
         # on the dataset.
         # accuracy is (correct_predictions / all_predictions)
-        if utils.L2I[label] == ll.predict(feats_to_vec(features), params):
+        if utils.L2I[label] == mlpn.predict(feats_to_vec(features), params):
             good = good + 1
         else:
             bad = bad + 1
@@ -37,24 +39,34 @@ def train_classifier(train_data, dev_data, num_iterations, learning_rate, params
     learning_rate: the learning rate to use.
     params: list of parameters (initial values)
     """
-    W, b = params
+    # U, W, bu, bw = params
     for I in xrange(num_iterations):
         cum_loss = 0.0 # total loss in this iteration.
         random.shuffle(train_data)
         for label, features in train_data:
             x = feats_to_vec(features) # convert features to a vector.
             y = utils.L2I[label]
-            loss, grads = ll.loss_and_gradients(x, y, [W, b])
+            # grads is [gW, gbw, gU, gbu]
+            loss, grads = mlpn.loss_and_gradients(x, y, params)
             cum_loss += loss
-            W = W - learning_rate * grads[0]
-            b = b - learning_rate * grads[1]
+
+            i = 0
+            while i < len(params):
+                params[i][0] -= learning_rate * grads[i][0]
+                params[i][1] -= learning_rate * grads[i][1]
+                i += 1
+
+            # W = W - learning_rate * grads[0]
+            # bw = bw - learning_rate * grads[1]
+            # U = U - learning_rate * grads[2]
+            # bu = bu - learning_rate * grads[3]
             # YOUR CODE HERE
             # update the parameters according to the gradients
             # and the learning rate.
 
         train_loss = cum_loss / len(train_data)
-        train_accuracy = accuracy_on_dataset(train_data, [W, b])
-        dev_accuracy = accuracy_on_dataset(dev_data, [W, b])
+        train_accuracy = accuracy_on_dataset(train_data, params)
+        dev_accuracy = accuracy_on_dataset(dev_data, params)
         print I+1, train_loss, train_accuracy, dev_accuracy
     return params
 
@@ -66,10 +78,20 @@ if __name__ == '__main__':
     dev_data = utils.DEV
 
     learning_rate = 0.01
-    num_iterations = 5000
+    num_iterations = 250
     out_dim = len(utils.L2I)
+    hid_dim1 = 100
+    hid_dim2 = 50
+    hid_dim3 = 20
     in_dim = 600
+    # in_dim = len(utils.F2I)
 
-    params = ll.create_classifier(in_dim, out_dim)
+    params = mlpn.create_classifier([in_dim, hid_dim1, hid_dim2, hid_dim3, out_dim])
     trained_params = train_classifier(train_data, dev_data, num_iterations, learning_rate, params)
 
+    if EXECUTE_TEST:
+        test_results = []
+        for val in utils.TEST:
+            test_results.append(utils.I2L[mlpn.predict(feats_to_vec(val[1]), trained_params)])
+        with open("test_results.txt", "w") as f:
+            f.writelines(["%s\n" % item for item in test_results])

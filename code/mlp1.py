@@ -14,20 +14,37 @@ def classifier_output(x, params):
     # W,b = params
     # probs = softmax(np.dot(x, W) + b)
 
-    W1, W2, b1, b2 = params
+    U, W, bu, bw = params
 
-    l1_output = np.tanh(np.dot(x, W1) + b1)
-    l2_output = np.dot(l1_output, W2) + b2
+    l1_output = np.tanh(np.dot(x, W) + bw)
+    l2_output = np.dot(l1_output, U) + bu
     probs = softmax(l2_output)
-
     return probs
 
 def predict(x, params):
     return np.argmax(classifier_output(x, params))
 
+def calc_weight_matrix_grad(x, gb):
+    return np.array([x]).transpose().dot([gb])
+
 def loss_and_gradients(x, y, params):
     # YOU CODE HERE
-    return None
+    U, W, bu, bw = params
+    y_label = np.zeros(bu.shape)
+    y_label[y] = 1
+
+    y_pred = classifier_output(x, params)
+    loss = -np.log(y_pred[y])
+
+    z = np.array(x).dot(W) + bw
+    a = np.tanh(z)
+    gbu = y_pred - y_label
+    gU = calc_weight_matrix_grad(a, gbu)
+    # gU = np.array([a1]).transpose().dot([gbu])
+    gbw = gbu.dot(U.transpose()) * (1 - np.power(a, 2))
+    gW = calc_weight_matrix_grad(x, gbw)
+    # gW = np.array([x]).transpose().dot([gbw])
+    return loss, [gW, gbw, gU, gbu]
 
 def create_classifier(in_dim, hid_dim, out_dim):
     """
@@ -36,19 +53,19 @@ def create_classifier(in_dim, hid_dim, out_dim):
     and output dimension out_dim.
     """
     # give different values than 0
-    W1 = np.zeros((in_dim, hid_dim))
-    W2 = np.zeros((hid_dim, out_dim))
-    b1 = np.zeros(hid_dim)
-    b2 = np.zeros(out_dim)
+    W = np.random.uniform(-1, 1, (in_dim, hid_dim))
+    U = np.random.uniform(-1, 1, (hid_dim, out_dim))
+    bw = np.random.uniform(0.1, 0.1, (hid_dim))
+    bu = np.random.uniform(0.1, 0.1, (out_dim))
 
-    return [W1, W2, b1, b2]
+    return [U, W, bu, bw]
 
 if __name__ == '__main__':
     from grad_check import gradient_check
 
     x = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
-    W1, W2, b1, b2 = create_classifier(10, 5, 2)
-    output = classifier_output(x, [W1, W2, b1, b2])
+    U, W, bu, bw = create_classifier(10, 5, 2)
+    output = classifier_output(x, [U, W, bu, bw])
 
     t = 8

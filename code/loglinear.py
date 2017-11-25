@@ -17,8 +17,7 @@ def softmax(x):
     # For numeric stability, use the identify you proved in Ex 2 Q1.
     # return x
     e_x = np.exp(x - np.max(x))
-    bla = e_x / e_x.sum()
-    return bla
+    return e_x / e_x.sum()
 
 def classifier_output(x, params):
     """
@@ -58,13 +57,15 @@ def loss_and_gradients(x, y, params):
     y_pred = classifier_output(x, params)
     loss = -np.log(y_pred[y])
 
-    gW = np.empty(W.shape)
-    gb = np.empty(b.shape)
-
-    for (i, j), value in np.ndenumerate(gW):
-        gW[i, j] = x[i] * (y_pred[j] - y_label[j])
-
+    # gW = np.empty(W.shape)
+    # gb = np.empty(b.shape)
     gb = y_pred - y_label
+    gW = np.transpose([gb]).dot((np.array([x]))).transpose()
+
+    # for (i, j), value in np.ndenumerate(gW):
+    #     gW[i, j] = x[i] * (y_pred[j] - y_label[j])
+
+
 
     return loss, [gW, gb]
 
